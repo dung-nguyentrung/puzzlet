@@ -1,10 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-		<title>Puzzlet - The Puzzle House</title>
+		<title>Puzzlet – The Puzzle House</title>
+		<meta name="description" content="Puzzlet – Ngôi Nhà Câu Đố: game giải đố vẽ tay về Việt Nam. Chơi thử miễn phí 2 chương đầu ngay trên trình duyệt.">
+		<meta name="theme-color" content="#f3dfc1">
+		<meta property="og:title" content="Puzzlet – The Puzzle House">
+		<meta property="og:description" content="Game giải đố vẽ tay. Chơi thử miễn phí 2 chương đầu ngay trên trình duyệt.">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
 		<style>
+:root {
+	--bg: #f3dfc1;
+	--ink: #1f1d1b;
+	--cream: #f6eedb;
+	--dark: #55524b;
+	--coral: #d8664e;
+	--mustard: #e6bb52;
+	--leaf: #5f9a63;
+	--teal: #5fa3a3;
+	--plum: #9a7bb0;
+	--navy: #3f5f84;
+}
+
 html, body, #canvas {
 	margin: 0;
 	padding: 0;
@@ -12,10 +32,11 @@ html, body, #canvas {
 }
 
 body {
-	color: white;
-	background-color: black;
+	color: var(--ink);
+	background-color: var(--bg);
 	overflow: hidden;
 	touch-action: none;
+	font-family: 'Patrick Hand', 'Comic Sans MS', cursive, sans-serif;
 }
 
 #canvas {
@@ -26,68 +47,126 @@ body {
 	outline: none;
 }
 
-#status, #status-splash, #status-progress {
-	position: absolute;
-	left: 0;
-	right: 0;
-}
-
-#status, #status-splash {
-	top: 0;
-	bottom: 0;
-}
-
 #status {
-	background-color: #242424;
+	position: absolute;
+	inset: 0;
+	background-color: var(--bg);
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	gap: 0.6rem;
+	padding: 0 16px;
+	text-align: center;
 	visibility: hidden;
+	transition: opacity 0.4s ease;
 }
 
-#status-splash {
-	max-height: 100%;
-	max-width: 100%;
-	margin: auto;
+#status.fade {
+	opacity: 0;
 }
 
-#status-splash.show-image--false {
-	display: none;
+#logo {
+	width: min(168px, 32vw);
+	height: auto;
+	animation: bob 2.4s ease-in-out infinite;
 }
 
-#status-splash.fullsize--true {
-	height: 100%;
-	width: 100%;
-	object-fit: contain;
+@keyframes bob {
+	0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+	50% { transform: translateY(-8px) rotate(1.5deg); }
 }
 
-#status-splash.use-filter--false {
-	image-rendering: pixelated;
+#title {
+	margin: 0.2rem 0 0;
+	font-size: clamp(52px, 11vw, 88px);
+	font-weight: normal;
+	line-height: 1;
+	letter-spacing: 1px;
 }
 
-#status-progress, #status-notice {
-	display: none;
+#title span {
+	display: inline-block;
+	text-shadow: 3px 3px 0 rgba(31, 29, 27, 0.22);
+	animation: wave 2s ease-in-out infinite;
+}
+
+@keyframes wave {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-4px); }
+}
+
+#subtitle {
+	margin: 0;
+	font-size: clamp(22px, 4.5vw, 30px);
+	color: #2f6969;
+}
+
+#badge {
+	display: inline-block;
+	margin-top: 0.2rem;
+	padding: 0.1rem 0.9rem;
+	font-size: 20px;
+	background: var(--cream);
+	border: 2px solid var(--ink);
+	border-radius: 6px 10px 7px 12px;
+	transform: rotate(-1.5deg);
+	box-shadow: 3px 3px 0 rgba(31, 29, 27, 0.18);
 }
 
 #status-progress {
-	bottom: 10%;
-	width: 50%;
-	margin: 0 auto;
+	display: none;
+	width: min(420px, 100%);
+	margin-top: 1.6rem;
+}
+
+#bar {
+	height: 22px;
+	background: var(--cream);
+	border: 2.5px solid var(--ink);
+	border-radius: 12px 9px 13px 8px;
+	overflow: hidden;
+	box-shadow: 4px 4px 0 rgba(31, 29, 27, 0.18);
+}
+
+#bar-fill {
+	height: 100%;
+	width: 0%;
+	background: repeating-linear-gradient(-45deg, var(--coral) 0 12px, #e07a62 12px 24px);
+	border-right: 2.5px solid var(--ink);
+	box-sizing: border-box;
+	transition: width 0.25s ease;
+}
+
+#bar.indeterminate #bar-fill {
+	width: 100% !important;
+	border-right: none;
+	background-size: 34px 34px;
+	animation: slide 0.8s linear infinite;
+}
+
+@keyframes slide {
+	from { background-position: 0 0; }
+	to { background-position: 34px 0; }
+}
+
+#progress-text {
+	margin-top: 0.5rem;
+	font-size: 22px;
+	color: var(--dark);
 }
 
 #status-notice {
-	background-color: #5b3943;
-	border-radius: 0.5rem;
-	border: 1px solid #9b3943;
-	color: #e0e0e0;
-	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
+	display: none;
+	max-width: 520px;
+	margin-top: 1.4rem;
+	padding: 1rem 1.2rem;
+	font-size: 20px;
 	line-height: 1.3;
-	margin: 0 2rem;
-	overflow: hidden;
-	padding: 1rem;
-	text-align: center;
-	z-index: 1;
+	background: var(--cream);
+	border: 2.5px solid var(--coral);
+	border-radius: 10px;
+	color: var(--ink);
 }
 		</style>
 		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
@@ -100,25 +179,78 @@ body {
 		</canvas>
 
 		<noscript>
-			Your browser does not support JavaScript.
+			Trình duyệt của bạn cần bật JavaScript để chơi. / Please enable JavaScript to play.
 		</noscript>
 
 		<div id="status">
-			<img id="status-splash" class="show-image--true fullsize--true use-filter--true" src="index.png" alt="">
-			<progress id="status-progress"></progress>
+			<svg id="logo" xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" aria-hidden="true">
+				<g stroke="#1f1d1b" stroke-linejoin="round" stroke-linecap="round">
+					<ellipse cx="64" cy="104" rx="46" ry="8" fill="#5fa3a3" stroke-width="3"/>
+					<path d="M80 50 L80 30 L91 30 L91 58 Z" fill="#9a6f4c" stroke-width="3.5"/>
+					<path d="M35 60 L34 102 L95 101 L93 60 Z" fill="#f6eedb" stroke-width="4"/>
+					<path d="M25 65 L64 27 L103 65 Z" fill="#d8664e" stroke-width="4"/>
+					<circle cx="64" cy="51" r="7.5" fill="#ffe39a" stroke-width="3"/>
+					<rect x="40" y="70" width="13" height="13" rx="2" fill="#b6dbea" stroke-width="3"/>
+					<rect x="75" y="70" width="13" height="13" rx="2" fill="#b6dbea" stroke-width="3"/>
+					<path d="M56 101 L56 85 A8 8 0 0 1 72 85 L72 101" fill="#e6bb52" stroke-width="3.5"/>
+					<path d="M108 102 C108 96 107 92 106 86" fill="none" stroke-width="3"/>
+					<path d="M106 88 C100 88 96 84 96 79 C102 79 106 83 106 88 Z" fill="#93bf7a" stroke-width="2.5"/>
+					<path d="M106.5 86 C108 80 112 77 117 77 C117 82 113 86 106.5 86 Z" fill="#5f9a63" stroke-width="2.5"/>
+				</g>
+			</svg>
+			<h1 id="title"></h1>
+			<p id="subtitle"></p>
+			<span id="badge"></span>
+			<div id="status-progress">
+				<div id="bar"><div id="bar-fill"></div></div>
+				<div id="progress-text"></div>
+			</div>
 			<div id="status-notice"></div>
 		</div>
 
 		<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":11246528,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":11276932,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
 (function () {
+	const VI = (navigator.language || '').toLowerCase().startsWith('vi');
+	const TEXT = VI ? {
+		subtitle: 'Ngôi Nhà Câu Đố',
+		badge: 'Chơi thử miễn phí · Chương 1–2',
+		loading: 'Đang mở cửa ngôi nhà…',
+		starting: 'Sắp xong rồi…',
+		missing: 'Trình duyệt này thiếu tính năng cần để chạy game:\n',
+		unknown: 'Đã có lỗi xảy ra. Hãy thử tải lại trang.',
+	} : {
+		subtitle: 'The Puzzle House',
+		badge: 'Free demo · Chapters 1–2',
+		loading: 'Opening the door…',
+		starting: 'Almost there…',
+		missing: 'This browser is missing features needed to run the game:\n',
+		unknown: 'Something went wrong. Please reload the page.',
+	};
+
+	// chữ "Puzzlet" mỗi chữ cái một màu, giống màn hình chính trong game
+	const colors = ['--coral', '--mustard', '--leaf', '--teal', '--plum', '--coral', '--navy'];
+	const title = document.getElementById('title');
+	'Puzzlet'.split('').forEach((ch, i) => {
+		const span = document.createElement('span');
+		span.textContent = ch;
+		span.style.color = `var(${colors[i]})`;
+		span.style.animationDelay = `${-i * 0.22}s`;
+		title.appendChild(span);
+	});
+	document.getElementById('subtitle').textContent = TEXT.subtitle;
+	document.getElementById('badge').textContent = TEXT.badge;
+
 	const statusOverlay = document.getElementById('status');
 	const statusProgress = document.getElementById('status-progress');
 	const statusNotice = document.getElementById('status-notice');
+	const bar = document.getElementById('bar');
+	const barFill = document.getElementById('bar-fill');
+	const progressText = document.getElementById('progress-text');
 
 	let initializing = true;
 	let statusMode = '';
@@ -128,8 +260,9 @@ const engine = new Engine(GODOT_CONFIG);
 			return;
 		}
 		if (mode === 'hidden') {
-			statusOverlay.remove();
 			initializing = false;
+			statusOverlay.classList.add('fade');
+			setTimeout(() => statusOverlay.remove(), 400);
 			return;
 		}
 		statusOverlay.style.visibility = 'visible';
@@ -156,7 +289,7 @@ const engine = new Engine(GODOT_CONFIG);
 		} else if (typeof err === 'string') {
 			setStatusNotice(err);
 		} else {
-			setStatusNotice('An unknown error occurred.');
+			setStatusNotice(TEXT.unknown);
 		}
 		setStatusMode('notice');
 		initializing = false;
@@ -193,20 +326,20 @@ const engine = new Engine(GODOT_CONFIG);
 				console.error('Error while registering service worker:', err);
 			});
 		} else {
-			// Display the message as usual
-			const missingMsg = 'Error\nThe following features required to run Godot projects on the Web are missing:\n';
-			displayFailureNotice(missingMsg + missing.join('\n'));
+			displayFailureNotice(TEXT.missing + missing.join('\n'));
 		}
 	} else {
 		setStatusMode('progress');
+		progressText.textContent = TEXT.loading;
 		engine.startGame({
 			'onProgress': function (current, total) {
 				if (current > 0 && total > 0) {
-					statusProgress.value = current;
-					statusProgress.max = total;
+					bar.classList.remove('indeterminate');
+					const pct = Math.min(100, Math.floor((current / total) * 100));
+					barFill.style.width = `${pct}%`;
+					progressText.textContent = pct >= 100 ? TEXT.starting : `${TEXT.loading} ${pct}%`;
 				} else {
-					statusProgress.removeAttribute('value');
-					statusProgress.removeAttribute('max');
+					bar.classList.add('indeterminate');
 				}
 			},
 		}).then(() => {
